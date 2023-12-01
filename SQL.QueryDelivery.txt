@@ -1,0 +1,403 @@
+-- CRIAÇÃO DE BANCO DE DADOS
+CREATE DATABASE app_delivery
+GO
+USE app_delivery 
+
+-- CRIAÇÃO TABELA "AVALIAÇÃO"
+CREATE TABLE avaliacao (
+id SMALLINT PRIMARY KEY IDENTITY,
+Avaliacao SMALLINT NOT NULL,
+Comentario_Avaliacao VARCHAR (100),
+Resposta_Restaurante  VARCHAR (100)
+);
+
+-- CRIAÇÃO TABELA "RESTAURANTE"
+CREATE TABLE restaurante (
+id SMALLINT PRIMARY KEY IDENTITY,
+id_avaliacao SMALLINT NULL,
+Nome_Restaurante VARCHAR (70) NOT NULL,
+CNPJ BIGINT NOT NULL,
+FOREIGN KEY (id_avaliacao) REFERENCES avaliacao (id) 
+); 
+
+-- CRIAÇÃO TABELA "RESTAURANTE FILIAL"
+CREATE TABLE restaurante_filial (
+id SMALLINT PRIMARY KEY IDENTITY, 
+id_restaurante SMALLINT,
+Nome_Restaurante_Filial VARCHAR (70) NOT NULL,
+FOREIGN KEY (id_restaurante) REFERENCES restaurante (id) 
+); 
+
+-- CRIAÇÃO TABELA "ENDEREÇO"
+CREATE TABLE endereco (
+id SMALLINT PRIMARY KEY IDENTITY, 
+id_restaurante SMALLINT, 
+Rua VARCHAR (80) NOT NULL,
+Numero VARCHAR (6) NOT NULL, 
+Bairro VARCHAR (30) NOT NULL,
+Estado VARCHAR (30) NOT NULL, 
+Regiao VARCHAR (30) NOT NULL,
+FOREIGN KEY (id_restaurante) REFERENCES restaurante (id) 
+); 
+
+-- CRIAÇÃO TABELA "PROPRIETÁRIO" 
+CREATE TABLE proprietario (
+id SMALLINT PRIMARY KEY IDENTITY,
+id_restaurante SMALLINT, 
+Nome_Proprietario VARCHAR (90) NOT NULL, 
+Data_Nascimento DATE NOT NULL,
+CPF BIGINT NOT NULL,
+FOREIGN KEY (id_restaurante) REFERENCES restaurante (id) 
+); 
+
+-- CRIAÇÃO TABELA "CONTATO PROPRIETARIO'
+CREATE TABLE contato_proprietario (
+id SMALLINT PRIMARY KEY IDENTITY, 
+id_proprietario SMALLINT, 
+DDD SMALLINT NOT NULL, 
+Numero INT NOT NULL, 
+Whatsapp BIT NOT NULL,
+Email VARCHAR (120) NOT NULL, 
+FOREIGN KEY (id_proprietario) REFERENCES proprietario (id)
+);
+
+-- CRIAÇÃO TABELA "CATEGORIA PRATO"
+CREATE TABLE categoria_prato (
+id SMALLINT PRIMARY KEY IDENTITY, 
+Categoria VARCHAR (50) NOT NULL
+); 
+
+-- CRIAÇÃO TABELA "PRATO"
+CREATE TABLE prato ( 
+id SMALLINT PRIMARY KEY IDENTITY, 
+id_categoria SMALLINT, 
+id_restaurante SMALLINT, 
+Nome_Prato VARCHAR (50) NOT NULL,
+Descricao VARCHAR (70) NOT NULL,
+Valor MONEY NOT NULL, 
+FOREIGN KEY (id_categoria) REFERENCES categoria_prato (id),
+FOREIGN KEY (id_restaurante) REFERENCES restaurante (id) 
+); 
+
+-- CRIAÇÃO TABELA "MOTOBOY"
+CREATE TABLE motoboy ( 
+id SMALLINT PRIMARY KEY IDENTITY,
+Nome_Motoboy VARCHAR (90) NOT NULL, 
+Data_Nascimento DATE NOT NULL,
+CPF BIGINT NOT NULL,
+CNH BIGINT NOT NULL
+); 
+
+-- CRIAÇÃO TABELA "CONTATO MOTOBOY"
+CREATE TABLE contato_motoboy (
+id SMALLINT PRIMARY KEY IDENTITY, 
+id_motoboy SMALLINT, 
+DDD SMALLINT NOT NULL, 
+Numero INT NOT NULL, 
+Email VARCHAR (120) NOT NULL, 
+FOREIGN KEY (id_motoboy) REFERENCES motoboy (id)
+); 
+
+-- CRIAÇÃO TABELA "LOCALIZAÇÃO ATUAL"
+CREATE TABLE localizacao_atual (
+id SMALLINT PRIMARY KEY IDENTITY,
+id_motoboy SMALLINT, 
+Latitude FLOAT NOT NULL, 
+Longitude FLOAT NOT NULL, 
+FOREIGN KEY (id_motoboy) REFERENCES motoboy (id)
+);
+
+-- CRIAÇÃO TABELA "MARCA VEÍCULO"
+CREATE TABLE marca_veiculo (
+id SMALLINT PRIMARY KEY IDENTITY,
+Nome_Marca VARCHAR (50) NOT NULL
+); 
+
+-- CRIAÇÃO TABELA "VEÍCULO"
+CREATE TABLE veiculo (
+id SMALLINT PRIMARY KEY IDENTITY, 
+id_marca SMALLINT, 
+id_motoboy SMALLINT, 
+Modelo VARCHAR (45) NOT NULL, 
+Cor VARCHAR (25) NOT NULL,
+Placa_Veiculo VARCHAR (7) NOT NULL, 
+Documentacao_Veiculo BIGINT NOT NULL, 
+FOREIGN KEY (id_marca) REFERENCES marca_veiculo (id),
+FOREIGN KEY (id_motoboy) REFERENCES motoboy (id)
+);
+
+-- CRIAÇÃO TABELA "CLIENTE" 
+CREATE TABLE cliente (
+id SMALLINT PRIMARY KEY IDENTITY, 
+Nome_Cliente VARCHAR (90) NOT NULL, 
+Data_Nascimento DATE NOT NULL, 
+CPF BIGINT NOT NULL
+);
+
+-- CRIAÇÃO TABELA "CONTATO CLIENTE"
+CREATE TABLE contato_cliente (
+id SMALLINT PRIMARY KEY IDENTITY, 
+id_cliente SMALLINT,
+DDD SMALLINT NOT NULL, 
+Numero INT NOT NULL, 
+Email VARCHAR (120) NOT NULL, 
+FOREIGN KEY (id_cliente) REFERENCES cliente (id) 
+);
+
+-- CRIAÇÃO TABELA "ENDEREÇO CLIENTE" 
+CREATE TABLE endereco_cliente (
+id SMALLINT PRIMARY KEY IDENTITY,
+id_cliente SMALLINT, 
+Rua VARCHAR (80) NOT NULL,
+Numero VARCHAR (6) NOT NULL, 
+Bairro VARCHAR (30) NOT NULL,
+Estado VARCHAR (30) NOT NULL, 
+FOREIGN KEY (id_cliente) REFERENCES cliente (id) 
+); 
+
+-- CRIAÇÃO TABELA "FORMA PAGAMENTO"
+CREATE TABLE forma_pagamento (
+id SMALLINT PRIMARY KEY IDENTITY, 
+Forma_Pagamento VARCHAR (45) NOT NULL
+); 
+
+-- CRIAÇÃO TABELA "CARTÃO CLIENTE"
+CREATE TABLE cartao_cliente (
+id SMALLINT PRIMARY KEY IDENTITY, 
+Numero_Cartao BIGINT NOT NULL, 
+CVV SMALLINT NOT NULL, 
+Data_Validade DATE NOT NULL,
+Nome_Titular VARCHAR (90)
+); 
+
+-- CRIAÇÃO TABELA "NOTA FISCAL"
+CREATE TABLE nota_fiscal (
+id SMALLINT PRIMARY KEY IDENTITY, 
+Numero_NF INT NOT NULL, 
+Data_Emissao DATE NOT NULL, 
+Hora_Emissao TIME NOT NULL, 
+CPF BIGINT
+); 
+
+-- CRIAÇÃO TABELA "PAGAMENTO"
+CREATE TABLE pagamento (
+id SMALLINT PRIMARY KEY IDENTITY, 
+id_forma_pagamento SMALLINT,
+id_nota_fiscal SMALLINT, 
+id_cartao_cliente SMALLINT NULL, 
+Valor_Total MONEY NOT NULL, 
+Valor_Entrega MONEY,
+Cupom VARCHAR (10), 
+Maquineta BIT NOT NULL,
+FOREIGN KEY (id_forma_pagamento) REFERENCES forma_pagamento (id), 
+FOREIGN KEY (id_nota_fiscal) REFERENCES nota_fiscal (id), 
+FOREIGN KEY (id_cartao_cliente) REFERENCES cartao_cliente (id)
+); 
+
+-- CRIAÇÃO TABELA "STATUS PEDIDO"
+CREATE TABLE status_pedido (
+id SMALLINT PRIMARY KEY IDENTITY, 
+Status_Pedido VARCHAR (15) NOT NULL
+); 
+
+-- CRIAÇÃO TABELA "CANCELAMENTO"
+CREATE TABLE cancelamento (
+id SMALLINT PRIMARY KEY IDENTITY, 
+Motivo_Cancelamento VARCHAR (60) NOT NULL
+);
+
+-- CRIAÇÃO TABELA "PEDIDO ENTREGA"
+CREATE TABLE pedido_entrega ( 
+id SMALLINT PRIMARY KEY IDENTITY, 
+id_cliente SMALLINT, 
+id_motoboy SMALLINT, 
+id_status_pedido SMALLINT, 
+id_pagamento SMALLINT, 
+id_cancelamento SMALLINT NULL,
+Numero_Pedido CHAR (5), 
+Data_Pedido DATE NOT NULL, 
+Hora_Pedido TIME NOT NULL, 
+FOREIGN KEY (id_cliente) REFERENCES cliente (id),
+FOREIGN KEY (id_motoboy) REFERENCES motoboy (id),
+FOREIGN KEY (id_status_pedido) REFERENCES status_pedido (id),
+FOREIGN KEY (id_pagamento) REFERENCES pagamento (id),
+FOREIGN KEY (id_cancelamento) REFERENCES cancelamento (id),
+);  
+
+-- CRIAÇÃO TABELA ASSOCIATIVA "PEDIDO COMIDA"
+CREATE TABLE pedido_comida (
+id_pedido SMALLINT, 
+id_prato SMALLINT, 
+PRIMARY KEY (id_pedido, id_prato), 
+FOREIGN KEY (id_pedido) REFERENCES pedido_entrega (id), 
+FOREIGN KEY (id_prato) REFERENCES prato (id)
+); 
+
+-- INSERÇÃO DOS REGISTROS EM RESTAURANTE 
+INSERT INTO restaurante (Nome_Restaurante, CNPJ) VALUES
+('Burger King', 13574594000196),
+('Pizza Hut', 00772527000568),
+('China Praia', 03722874000140),
+('Amabily', 859745023000190),
+('boi & Brasa', 17927087000140)
+
+-- INSERÇÃO DOS REGISTROS EM RESTAURANTE FILIAL
+INSERT INTO restaurante_filial (Nome_Restaurante_Filial, id_restaurante) VALUES 
+('Amabily Itatuba', 4) 
+
+-- INSERÇÃO DOS REGISTROS EM ENDEREÇO 
+INSERT INTO endereco (Rua, Numero, Bairro, Estado, Regiao, id_restaurante) VALUES 
+('Av. Governador Flávio Coutinho', '105A', 'Manaíra','Paraíba', 'Nordeste', 1),
+('Av. Governador Flávio Coutinho', '106A', 'Manaíra','Paraíba', 'Nordeste', 2),
+('R. Ivanice Martins da Câmara', '178', 'Jardim Oceania', 'Paraíba', 'Nordeste', 3),
+('Av. Presidente João Pessoa', '001', 'Centro', 'Paraíba', 'Nordeste', 4),
+('R. Fernando Luiz Henrique dos Santos', '713', 'Jardim Oceania', 'Paraíba', 'Nordeste', 5) 
+
+-- INSERÇÃO DOS REGISTROS EM PROPRIETÁRIO 
+INSERT INTO proprietario (Nome_Proprietario, Data_Nascimento, CPF, id_restaurante) VALUES 
+('João Victor', '19720519', '07845613298', 1),
+('Rodolfo Barbosa', '19800916', '04569356489', 2),
+('Juliana Silva', '19900620', '07894512367', 3),
+('Beto Rodolfo', '19801023', '01232169563', 4),
+('Raissa Nascimento', '19850825', '48575123695',5)
+
+-- INSERÇÃO DOS REGISTROS EM CONTATO PRORPIETÁRIO 
+INSERT INTO contato_proprietario (DDD, Numero, Whatsapp, Email, id_proprietario) VALUES 
+(83, 985624123, 1, 'joaovictor@gmail.com', 1),
+(84, 991235698, 0,'rodolfo@gmail.com', 2),
+(83, 996602398, 1, 'juliana@gmail.com', 3),
+(83, 982563621, 0, 'beto@gmail.com', 4),
+(11, 986523318, 1, 'ray@gmail.com', 5) 
+
+-- INSERÇÃO DOS REGISTROS EM CATEGORIA PRATO 
+INSERT INTO categoria_prato (Categoria) VALUES 
+('Italiano'), 
+('Brasileiro'), 
+('Japonês')
+
+-- INSERÇÃO DS REGISTROS EM PRATO
+INSERT INTO prato (Nome_Prato, Descricao, id_categoria, id_restaurante, Valor) VALUES 
+('Temaki', 'O temaki é um prato japonês de sushi em formato de cone', 3, 5, 32),
+('Arroz Carreteiro', 'Arroz Refogado com carne', 2, 3, 15),
+('Triplo Cheddar', 'Hambúrguer com muito cheddar', 2, 1, 28),
+('Pizza de Calabresa', 'Muita calabresa e borda recheada', 1, 2, 50) 
+
+-- INSERÇÃO DOS REGISTROS EM MOTOBOY 
+INSERT INTO motoboy (Nome_Motoboy, Data_Nascimento, CPF, CNH) VALUES
+('Arnaldo Barbosa', '19850326', 14565898741, 11211524696),
+('Rafael Riveira', '20000813', 45623695218, 78965415902),
+('Lucas Medeiros', '19970412', 23589045672, 78910236985)
+
+-- INSERÇÃO DOS REGISTROS EM CONTATO MOTOBOY 
+INSERT INTO contato_motoboy (DDD, Numero, Email, id_motoboy) VALUES 
+(83, 986521233, 'arnaldobarbosa@gmail.com', 1),
+(84, 987452391, 'rafaelrv@gmail.com', 2),
+(86, 982459874, 'lucasmdr@gmail.com', 3) 
+
+-- INSERÇÃO DOS REGISTROS EM LOCALIZAÇÃO ATUAL
+INSERT INTO localizacao_atual (Latitude, Longitude, id_motoboy) VALUES 
+(145.896, 785.523, 1), 
+(789.456, 326.785, 2), 
+(526.123, 147.256, 3) 
+
+-- INSERÇÃO DOS REGISTROS EM MARCA VEÍCULO 
+INSERT INTO marca_veiculo (Nome_Marca) VALUES 
+('Honda'),
+('Yamaha'),
+('Kawasaki') 
+
+-- INSERÇÃO DOS REGISTROS EM VEÍCULO 
+INSERT INTO veiculo (Modelo, Cor, Placa_Veiculo, Documentacao_Veiculo, id_marca, id_motoboy) VALUES 
+('Honda CBR600RR', 'Preta', '85HE4B7', 148759652312, 1, 1),
+('Kawasaki Ninja ZX-6R', 'Verde', '78BU9L5', 78456925361, 3, 2),
+('Yamaha MT-07', 'Vermelha', '95LP6V2', 45896312587, 2, 3) 
+
+-- INSERÇÃO DOS REGISTROS EM CLIENTE 
+INSERT INTO cliente (Nome_Cliente, Data_Nascimento, CPF) VALUES 
+('Natanael Araújo', '19990902', 07812963582),
+('Gabriela Matias', '20020819', 01236985749),
+('Bruna Queiroz', '20010612', 72156312870) 
+
+-- INSERÇÃO DOS REGISTROS EM CONTATO CLIENTE 
+INSERT INTO	contato_cliente (DDD, Numero, Email, id_cliente) VALUES
+(83, 985623318, 'natangamer@gmail.com', 1),
+(82, 996391256, 'gabymatias@gmail.com', 2),
+(11, 996682578, 'bruqueiroz@gmail.com', 3) 
+
+-- INSERÇÃO DOS REGISTROS EM ENDEREÇO CLIENTE 
+INSERT INTO endereco_cliente (Rua, Numero, Bairro, Estado, id_cliente) VALUES 
+('R. Ecluides Magno Bacalhau','S/N', 'Centro', 'Paraíba', 2),
+('Av. Júlia Freire', '1441', 'Expedicionários', 'Paraíba', 3), 
+('R. Alírio Wanderley', '215', '13 de Maio', 'Paraíba', 1)
+
+-- INSERÇÃO DOS REGISTROS EM FORMA DE PAGAMENTO 
+INSERT INTO forma_pagamento (Forma_Pagamento) VALUES 
+('Pix'),
+('Crédito'),
+('Débito')
+
+-- INSERÇÃO DOS REGISTROS EM CARTÃO CLIENTE 
+INSERT INTO cartao_cliente (Numero_Cartao, CVV, Data_Validade, Nome_Titular) VALUES 
+(123456963, 236, '20301001', 'Natanael Araújo'),
+(789548784, 123, '20260401', 'Bruna Queiroz')
+
+-- INSERÇÃO DOS REGISTROS EM NOTA FISCAL 
+INSERT INTO nota_fiscal (Numero_NF, Data_Emissao, Hora_Emissao) VALUES 
+(78945, '20231125', '19:30'), 
+(984526, '20231115', '12:00'),
+(125432, '20231106', '23:12')
+
+-- INSERÇÃO DOS REGISTROS EM PAGAMENTO 
+INSERT INTO pagamento (Valor_Total, Valor_Entrega, Maquineta, id_forma_pagamento, id_nota_fiscal, id_cartao_cliente) VALUES 
+(70.30, 05.30, 1, 2, 2, 1),
+(120, 12.50, 1, 3, 3, 2)
+INSERT INTO pagamento (Valor_Total, Maquineta, id_forma_pagamento, id_nota_fiscal, Cupom) VALUES 
+(80, 0, 1, 1, 'TAB78') 
+
+-- INSERÇÃO DOS REGISTROS EM STATUS PEDIDO
+INSERT INTO status_pedido (Status_Pedido) VALUES 
+('Produzindo'),
+('A Caminho'),
+('Entregue'), 
+('Cancelado') 
+
+-- INSERÇÃO DOS REGISTROS EM CANCELAMENTO 
+INSERT INTO cancelamento (Motivo_Cancelamento) VALUES 
+('O pedido saiu para entrega, e após 2 horas não chegou') 
+
+-- INSERÇÃO DOS REGISTROS EM PEDIDO ENTREGA 
+INSERT INTO pedido_entrega (Numero_Pedido, Data_Pedido, Hora_Pedido, id_cliente, id_motoboy, id_status_pedido, id_pagamento) VALUES 
+(758, '20231125', '19:30', 1, 1, 1, 1),
+(956, '20231115', '12:00', 2, 2, 2, 2)
+INSERT INTO pedido_entrega (Numero_Pedido, Data_Pedido, Hora_Pedido, id_cliente, id_motoboy, id_status_pedido, id_pagamento,
+id_cancelamento) VALUES 
+(859, '20231106', '23:12', 3, 3, 4, 3, 1)
+
+-- INSERÇÃO DOS REGISTROS EM PEDIDO COMIDA 
+INSERT INTO pedido_comida VALUES 
+(1,2),
+(2,1),
+(3,3) 
+
+SELECT 
+c.Nome_Cliente,
+CONCAT(ec.Rua, ec.Numero, ec.Bairro) AS Endereco_Entrega,
+p.Nome_Prato,
+pg.Valor_Total,
+m.Nome_Motoboy,
+v.modelo
+FROM Cliente c 
+INNER JOIN Endereco_Cliente ec
+ON c.id = ec.id_cliente
+INNER JOIN Pedido_Entrega pe
+on c.id = pe.id_cliente 
+INNER JOIN Motoboy m
+ON m.id = pe.id_motoboy
+INNER JOIN pedido_comida pc
+ON pc.id_pedido = pe.id
+INNER JOIN prato p
+ON p.id = pc.id_prato
+INNER JOIN pagamento pg
+ON pg.id = pe.id_pagamento
+INNER JOIN veiculo v
+ON v.id_motoboy = m.id

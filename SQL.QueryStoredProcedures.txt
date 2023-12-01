@@ -1,0 +1,348 @@
+-- AULA DE STORED PROCEDURES
+-- EXERCÍCIO 1
+
+CREATE PROC SP_DarBoaTarde
+
+	AS 
+		BEGIN 
+			PRINT 'BOA TARDE'
+	END 
+ GO
+
+ DROP PROC SP_DarBoaTarde
+ SP_helptext SP_DarBoaTarde
+
+ -- EXERCÍCIO 2 (ADICIONANDO PARÂMETROS)
+
+ ALTER PROC SP_DarBoaTarde(@HORA TINYINT)
+
+	AS 
+		/* ESTÁ PROCEDURE RECEBERÁ O PARÂMETRO HORA QUE
+		IRÁ CHECAR SE É DE TARDE E DAR A RESPOSTA PARA O CENÁRIO.
+		*/
+		BEGIN 
+			-- CHECANDO A HORA 
+			IF @HORA >= 12 AND @HORA <=18
+			BEGIN
+				PRINT 'BOA TARDE'
+			END
+			ELSE 
+				BEGIN
+					PRINT 'NÃO É DE TARDE'
+				END
+		END 
+	GO
+
+	EXEC SP_DarBoaTarde 21
+
+-- EXERCÍCIO 2
+
+ALTER PROC SP_CalcularDobro(
+		@NUMERO INT, 
+		@RESULTADO INT OUTPUT)
+	AS
+		/* 
+		DOCUMENTAÇÃO
+		ARQUIVO FONTE....: SP_CalcularDobro.sql
+		OBJETIVO.........: RECEBER UM PARÂMETRO, CALCULAR O DOBRO, E EXIBIR O RESULTADO.
+		AUTOR............: SMN - JÚLIA EVELYN
+		DATA.............: 29/11/2023
+		EX...............: EXEC 
+		*/
+		BEGIN
+			-- REALIZANDO CÁLCULO 
+			SET @RESULTADO = @NUMERO * 2
+				
+		END 
+	GO
+
+
+	DECLARE @RES TINYINT
+	EXEC SP_CalcularDobro 5, @RES OUTPUT 
+	SELECT @RES AS  RESULTADO 
+
+	-- EXERCÍCIO 3
+	
+	 ALTER PROC SP_DarBoaTarde (
+			@HORA TINYINT)
+	AS
+		/*
+		DOCUMENTAÇÃO
+		ARQUIVO FONTE....: SP_DarBoaTarde
+		OBJETIVO.........: Dar boa tarde.
+		AUTOR............: SMN - JÚLIA EVELYN
+		DATA.............: 29/11/2023
+		EX...............: EXEC [dbo].[SP_DarBoaTarde]
+		*/
+		BEGIN 
+			-- CHECANDO HORA 
+			IF @HORA >= 12 AND @HORA < 18 
+			BEGIN
+				-- DAR BOA TARDE
+				PRINT 'BOA TARDE'
+			END
+			ELSE 
+				BEGIN 
+					-- DIZER NÃO É DE TARDE
+					PRINT 'NÃO É DE TARDE'
+				END
+		END
+	GO
+
+	
+	EXEC SP_DarBoaTarde 13
+	EXEC SP_DarBoaTarde 21
+	EXEC SP_DarBoaTarde 9
+
+-- EXERCÍCIO 4 - PROPOSTO POR MATHEUS
+
+CREATE PROC SP_SomarNumero(
+		@NUMERO1 INT, 
+		@NUMERO2 INT,
+		@RESULTADO INT OUTPUT)
+	AS
+		/* 
+		DOCUMENTAÇÃO
+		ARQUIVO FONTE....: SP_SomarNumero.sql
+		OBJETIVO.........: RECEBER DOIS PARÂMETRO, CALCULAR A SOMA, E EXIBIR O RESULTADO.
+		AUTOR............: SMN - JÚLIA EVELYN
+		DATA.............: 30/11/2023
+		EX...............: DECLARE @RES INT
+						   EXEC [dbo].[SP_SomarNumero] 1500, 1500, @RES OUTPUT 
+	                       SELECT @RES AS RESULTADO
+		*/
+		BEGIN
+			-- REALIZANDO CÁLCULO 
+			SET @RESULTADO = @NUMERO1 + @NUMERO2 
+		END 
+	GO 
+
+	DECLARE @RES INT 
+	EXEC SP_SomarNumero 1500, 1500, @RES OUTPUT 
+	SELECT @RES AS RESULTADO
+
+	-- EXERCÍCIO 5 - PROPOSTO POR MATHEUS
+
+ALTER PROC SP_Calculadora(
+		@NUMERO1 INT, 
+		@OPERADOR CHAR,
+		@NUMERO2 INT,
+		@RESULTADO VARCHAR (30) OUTPUT)
+	AS
+		/* 
+		DOCUMENTAÇÃO
+		ARQUIVO FONTE....: SP_SomarNumero.sql
+		OBJETIVO.........: RECEBER DOIS PARÂMETRO, CALCULAR A SOMA, E EXIBIR O RESULTADO.
+		AUTOR............: SMN - JÚLIA EVELYN
+		DATA.............: 30/11/2023
+		EX...............: DECLARE @RES VARCHAR (30)
+						   EXEC [dbo].[SP_Calculadora] 120, '/', 120, @RES OUTPUT 
+	                       SELECT @RES AS RESULTADO
+		*/
+		BEGIN
+			-- REALIZANDO CÁLCULO 
+			IF @OPERADOR = '+' 
+				BEGIN
+					SET @RESULTADO = @NUMERO1 + @NUMERO2
+				END 
+			ELSE IF @OPERADOR = '-'
+				BEGIN 
+					SET @RESULTADO = @NUMERO1 - @NUMERO2
+				END 
+			ELSE IF @OPERADOR = '/' 
+				BEGIN 
+					SET @RESULTADO = @NUMERO1 / @NUMERO2
+				END 
+			ELSE IF @OPERADOR = '*' 
+				BEGIN 
+					SET @RESULTADO = @NUMERO1 * @NUMERO2
+				END 
+			ELSE
+				BEGIN  
+					SET @RESULTADO = 'OPERADOR INSERIDO INVÁLIDO.'
+				END 
+		END 
+	GO 
+
+	DECLARE @RES VARCHAR (30)
+	EXEC SP_Calculadora 120, '/', 120, @RES OUTPUT
+	SELECT @RES AS RESULTADO
+
+	-- EXERCÍCIO 6 - PROPOSTO POR MATHEUS 
+	
+	-- CRIAÇÃO DE TABELA 
+	CREATE DATABASE db_StoredProcedures
+	go
+	USE db_StoredProcedures 
+	CREATE TABLE pessoa (
+	id INT PRIMARY KEY IDENTITY, 
+	Nome VARCHAR (70) NOT NULL,
+	CPF BIGINT,
+	Estado_Civil VARCHAR (20) NOT NULL, 
+	);
+	SELECT * FROM pessoa
+	-- CRIAÇÃO DA PROCEDURE 
+	CREATE PROC SP_InserirDadosEmPessoa( 
+				@Nome VARCHAR (70),
+				@CPF BIGINT, 
+				@EstadoCivil VARCHAR (20))
+
+		AS
+		/* 
+		DOCUMENTAÇÃO
+		ARQUIVO FONTE....: SP_InserirDadosEmPessoa.sql
+		OBJETIVO.........: INSERIR DADOS NA TABELA PESSOA.
+		AUTOR............: SMN - JÚLIA EVELYN
+		DATA.............: 30/11/2023
+		EX...............: EXEC [dbo].[SP_InserirDadosEmPessoa]  @Nome = Matheus, @CPF = 3265525414, @EstadoCivil = Casada
+	                       SELECT * FROM pessoa
+		*/
+		BEGIN 
+			INSERT INTO pessoa (Nome, CPF, Estado_Civil) 
+				VALUES (@Nome, @CPF, @EstadoCivil) 
+						
+		END 
+	GO 
+
+	-- EXERCÍCIO 7 - PROPOSTO POR MATHEUS
+	DROP PROC SP_SelCliente;
+
+	ALTER PROC SP_SelCliente(
+				@id INT = NULL, 
+				@Nome VARCHAR(70) = NULL,
+				@CPF BIGINT = NULL, 
+				@EstadoCivil VARCHAR(20) = NULL)
+		
+		AS 
+		/* 
+		DOCUMENTAÇÃO
+		ARQUIVO FONTE....: SP_SelCliente.sql
+		OBJETIVO.........: SELECIONAR A TABELA PESSOA.
+		AUTOR............: SMN - JÚLIA EVELYN
+		DATA.............: 30/11/2023
+		EX...............: EXEC [dbo].[SP_SelCliente] 2, NULL, NULL, NULL 
+		*/
+		BEGIN 
+			SELECT *
+			FROM pessoa
+			WHERE (@id IS NULL OR id = @id) AND 
+				(@Nome IS NULL OR Nome = @Nome) AND 
+				(@CPF IS NULL OR CPF = @CPF) AND 
+				(@EstadoCivil IS NULL OR Estado_Civil = @EstadoCivil) 
+		END 
+	GO 
+	
+	-- EXERCÍCIO 8 - PROPOSTO POR MATHEUS
+	
+	-- CRIAÇÃO DA TABELA CIDADE
+	CREATE TABLE cidade(
+	id_cidade SMALLINT PRIMARY KEY, 
+	Nome_Cidade VARCHAR (100) NOT NULL
+	); 
+
+	-- CRIAÇÃO DA TABELA ESCOLARIDADE 
+	CREATE TABLE escolaridade(
+	id_escolaridade TINYINT PRIMARY KEY, 
+	Nivel_Escolaridade VARCHAR (50) NOT NULL
+	);
+
+	-- CRIAÇÃO DA TABELA PESSOA 
+	CREATE TABLE cidadao(
+	id_cidadao INT PRIMARY KEY IDENTITY, 
+	idcidade SMALLINT,
+	idescolaridade TINYINT,
+	Nome VARCHAR (100) NOT NULL,
+	CPF BIGINT NOT NULL,
+	Data_Nascimento DATE NOT NULL,
+	FOREIGN KEY (idcidade) REFERENCES cidade (id_cidade),
+	FOREIGN KEY (idescolaridade) REFERENCES escolaridade (id_escolaridade)
+	);
+	select * from cidadao
+
+	-- INSERÇÃO DOS REGISTROS EM CIDADE
+	INSERT INTO cidade (id_cidade, Nome_Cidade) VALUES 
+	(1, 'Ingá'),
+	(2, 'João Pessoa'),
+	(3, 'São Paulo'),
+	(4, 'Sapé'), 
+	(5, 'Mari'),
+	(6, 'Rio de Janeiro'),
+	(7, 'Natal'),
+	(8, 'Recife'),
+	(9, 'Curitiba'),
+	(10, 'Belo Horizonte') 
+	select * from cidade
+
+	-- INSERÇÃO DOS REGISTROS EM ESCOLARIDADE
+	INSERT INTO escolaridade (id_escolaridade, Nivel_Escolaridade) VALUES 
+	(1, 'Ensino Fundamental I'), 
+	(2, 'Ensino Fundamental II'), 
+	(3, 'Ensino Médio Completo'), 
+	(4, 'Ensino Médio Incompleto'), 
+	(5, 'Cursando Nível Superior'), 
+	(6, 'Nível Superior Incompleto'),
+	(7, 'Nível Superior Completo'),
+	(8, 'Bacharelado'),
+	(9, 'Doutorado'), 
+	(10, 'Mestrado') 
+	select * from escolaridade
+
+	-- INSERÇÃO DOS REGISTROS EM CIDADÃO
+	INSERT INTO cidadao (Nome, CPF, Data_Nascimento, idcidade, idescolaridade) VALUES 
+	('Júlia Evelyn', 07598175454, '20050421', 2, 5),
+	('Matheus Nascimento', 13159319407, '20000302', 4, 5),
+	('Robson Feitosa', 04617253475, '19820321', 3, 3),
+	('Cida', 04989045475, '19821101', 5, 3), 
+	('João Emanoel', 123654987, '20050125', 1, 5), 
+	('Alcymário', 789654159, '20040316', 1, 5),
+	('Emanuel Bacalhau', 102356987, '20030711', 1, 5),
+	('Henrique Santos', 456987125, '20050224', 1, 5), 
+	('Erick Alves', 785412036, '19880416', 1, 5),
+	('Junior Silva', 78541746, '19880416', 9, 8)
+	select * from cidadao
+
+	-- CRIAÇÃO DA PROCEDURE 
+
+	ALTER PROC SP_SelCidadao(
+				@idCidadao INT = NULL,   
+				@Nome VARCHAR(100) = NULL,
+				@CPF BIGINT = NULL, 
+				@DataNascimento DATE = NULL,
+				@Cidade VARCHAR(100) = NULL,
+				@Escolaridade VARCHAR(50) = NULL
+				)
+		AS 
+				/* 
+
+		DOCUMENTAÇÃO
+		ARQUIVO FONTE....: SP_SelCidadao.sql
+		OBJETIVO.........: SELECIONAR A TABELA PESSOA.
+		AUTOR............: SMN - JÚLIA EVELYN
+		DATA.............: 01/12/2023
+		EX...............: EXEC [SP_SelCidadao] null, null, null, null, 'Ingá', null
+		*/
+		BEGIN 
+			
+			
+			
+			SELECT 
+				p.Nome,
+				p.Data_Nascimento,
+				p.CPF, 
+				c.Nome_Cidade,
+				e.Nivel_Escolaridade
+			FROM cidadao p
+				INNER JOIN cidade c
+				ON c.id_cidade= p.idcidade
+				INNER JOIN escolaridade e 
+				ON e.id_escolaridade = p.idescolaridade
+
+				WHERE
+					(@idCidadao IS NULL OR id_cidadao = @idCidadao) AND 
+					(@Nome IS NULL OR Nome = @Nome) AND 
+					(@CPF IS NULL OR CPF = @CPF) AND 
+			 		(@DataNascimento IS NULL OR Data_Nascimento = @DataNascimento) AND
+					(@Cidade IS NULL OR Nome_cidade = @Cidade) AND 
+					(@Escolaridade IS NULL OR Nivel_Escolaridade = @Escolaridade) 
+		END 
+	GO 

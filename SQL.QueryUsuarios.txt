@@ -1,0 +1,172 @@
+-- CRIAR BANCO DE DADOS
+CREATE DATABASE Usuarios
+ON PRIMARY (
+NAME= Usuarios, 
+FILENAME='C:\SQL\db_Usuarios.mdf',
+SIZE=6MB,
+MAXSIZE=15MB, 
+FILEGROWTH= 10%
+)
+
+USE Usuarios
+
+-- TABELA 'Pessoa'
+CREATE TABLE Pessoa (
+id_Pessoa SMALLINT PRIMARY KEY IDENTITY,
+Nome_Completo VARCHAR (120) NOT NULL,
+Data_Nascimento DATE NOT NULL,
+CPF BIGINT NOT NULL
+);
+
+-- TABELA 'Contato' 
+CREATE TABLE Contato (
+id_Contato SMALLINT PRIMARY KEY IDENTITY,
+id_Pessoa SMALLINT,
+DDD SMALLINT NOT NULL, 
+Numero INT NOT NULL, 
+Whatsapp BIT NOT NULL, 
+FOREIGN KEY (id_Pessoa) REFERENCES Pessoa (id_Pessoa)
+);
+
+-- TABELA 'Time_Futebol'
+CREATE TABLE Time_Futebol (
+id SMALLINT PRIMARY KEY IDENTITY, 
+Time_Futebol VARCHAR (75)  
+);
+
+-- TABELA 'Animal'
+CREATE TABLE Animal (
+id SMALLINT PRIMARY KEY IDENTITY, 
+Animal VARCHAR (75) 
+);
+
+-- TABELA 'Time_Pessoa'
+
+CREATE TABLE Time_Pessoa (
+id_Pessoa SMALLINT,
+id_Time SMALLINT,
+Time_Favorito BIT, 
+PRIMARY KEY (id_Pessoa, id_Time),
+FOREIGN KEY (id_Pessoa) REFERENCES Pessoa (id_Pessoa),
+FOREIGN KEY (id_Time) REFERENCES Time_Futebol (id)
+);
+
+-- TIME 'Animal_Pessoa' 
+
+CREATE TABLE Animal_Pessoa (
+id_Pessoa SMALLINT,
+id_Animal SMALLINT,
+Animal_Favorito BIT NOT NULL,
+PRIMARY KEY (id_Pessoa, id_Animal),
+FOREIGN KEY (id_Pessoa) REFERENCES Pessoa (id_Pessoa),
+FOREIGN KEY (id_Animal) REFERENCES Animal (id)
+);
+
+-- REGISTROS PESSOAS
+
+INSERT INTO Pessoa VALUES
+('Júlia Evelyn', '20050421', 07598175454), 
+('Matheus Nascimento', '20000302', 13159319407),
+('Erick Alves', '19870417', 21458903687),
+('João Emanoel', '20050125', 07698185426),
+('Henrique Santos', '20050224', 01469023517),
+('Alcymário', '20040316', 13364598712),
+('Alex Silva', '19900718', 78945613202),
+('Emanuel Bacalhau', '20040512', 78415263110),
+('Natan Ferreira', '20000912', 74856632125),
+('Juan Amaral', '20030215', 74152362895)
+
+-- RESGISTOS CONTATO 
+INSERT INTO Contato
+(id_Pessoa, DDD, Numero, Whatsapp) VALUES
+(1, 83, 982090355, 1),
+(2, 83, 991828002, 1),
+(3, 83, 993426874, 1),
+(4, 83, 998015325, 1),
+(5, 83, 987130312, 0),
+(6, 83, 991836596, 1),
+(7, 83, 993718633, 0),
+(8, 83, 993239001, 1),
+(9, 83, 994177130, 1),
+(10, 83, 994111573, 1)
+
+-- REGISTROS TIME_FUTEBOL
+INSERT INTO Time_Futebol VALUES
+('Flamengo'),
+('Corinthians'),
+('Botafogo'),
+('Vasco'),
+('Fluminense'),
+('Atlético-MG'),
+('Bragantino'),
+('Palmeiras'),
+('São Paulo'),
+('Santos')
+
+-- REGISTROS ANIMAL
+INSERT INTO Animal VALUES
+('Cachorro'), 
+('Gato'),
+('Papagaio'),
+('Macaco'),
+('Rato'),
+('Elefante'),
+('Girafa'),
+('Tigre'),
+('Leão'),
+('Águia')
+
+-- REGISTROS TIME_PESSOA
+INSERT INTO Time_Pessoa 
+(id_Pessoa, id_Time, Time_Favorito) VALUES
+(1,2,1),
+(2,1,1),
+(3,2,0),
+(4,1,1),
+(5,1,1),
+(6,3,0),
+(7,1,1),
+(8,1,1),
+(9,3,0),
+(10,2,1)
+
+-- REGISTROS ANIMAL_PESSOA
+INSERT INTO Animal_Pessoa 
+(id_Pessoa, id_Animal, Animal_Favorito) VALUES
+(1,1,1),
+(2,2,1),
+(3,1,0),
+(4,3,1),
+(5,1,1),
+(6,1,1),
+(7,1,0),
+(8,2,1),
+(9,3,1),
+(10,3,1)
+
+
+-- INNER JOIN 
+SELECT 
+p.Nome_Completo,
+p.Data_Nascimento, 
+p.CPF,
+CONCAT(C.DDD, '-',  C.Numero) AS Numero,
+tf.Time_Futebol,
+a.Animal
+FROM Pessoa p
+inner join Contato c
+on p.id_pessoa = c.id_pessoa
+inner join Time_Pessoa tp
+on p.id_Pessoa = tp.id_Pessoa
+inner join Time_Futebol tf 
+on tp.id_Time =  tf.id
+inner join Animal_Pessoa ap
+on p.id_Pessoa = ap.id_Pessoa 
+inner join Animal a
+on ap.id_Animal = a.id 
+WHERE ap.Animal_Favorito = 1  AND tp.Time_Favorito = 1
+
+
+-- COMANDO IN E NOT IN
+SELECT * FROM Pessoa
+WHERE id_Pessoa not in (1,2,3,4,7)
